@@ -2,18 +2,15 @@ const createRecipeTemplate = ({id, image, name, time, description, ingredients})
     const picturePath = `./assets/img/${image}`;
 
     const generateIngredientsHTML = () => {
-        let htmlString = "";
-        ingredients.forEach(({ingredient: ingredientName, quantity, unit}) => {
+        return ingredients.map(({ingredient: ingredientName, quantity, unit}) => {
             const quantityString = `${quantity || ''} ${unit || ''}`.trim();
-            htmlString += `
-                <div class="recipe-ingredient">
-                    <p class="recipe-ingredient_name">${ingredientName}</p>
-                    <p class="recipe-ingredient_quantity">${quantityString}</p>
-                </div>
-            `;
-        });
-
-        return htmlString;
+            return `
+               <div class="recipe-ingredient">
+                  <p class="recipe-ingredient_name">${ingredientName}</p>
+                  <p class="recipe-ingredient_quantity">${quantityString}</p>
+               </div>
+           `;
+        }).join('');
     };
 
     const getRecipeHTML = () => {
@@ -45,7 +42,8 @@ const createRecipeTemplate = ({id, image, name, time, description, ingredients})
             </article>
         `;
         const parser = new DOMParser();
-        return parser.parseFromString(htmlString, "text/html").body.firstChild;
+        const recipeNode = parser.parseFromString(htmlString, "text/html").body.firstChild;
+        return recipeNode.cloneNode(true);
     };
 
     return {getRecipeHTML};

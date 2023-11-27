@@ -1,6 +1,8 @@
 const gallery = document.querySelector(".recipes")
-
+const fragment = document.createDocumentFragment();
 recipes.forEach(recipe => {
-    let recipeDOM = createRecipeTemplate(recipe).getRecipeHTML()
-    gallery.appendChild(recipeDOM)
-})
+    const card = createRecipeTemplate(recipe).getRecipeHTML();
+    fragment.appendChild(card);
+});
+
+gallery.appendChild(fragment);
