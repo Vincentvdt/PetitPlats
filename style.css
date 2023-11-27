@@ -14,7 +14,7 @@ body, html {
 .hero-img {
     display: flex;
     flex-direction: column;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%), url(./assets/hero_bg.jpeg);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.30) 100%), url(./assets/hero_bg-min.jpeg);
     background-size: cover;
     height: 667px;
     width: 100%;
@@ -160,6 +160,12 @@ main {
     background: #FFF;
     box-shadow: 0 4px 34px 30px rgba(0, 0, 0, 0.04);
     overflow: hidden;
+    cursor: pointer;
+    transition: transform 200ms ease-out
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
 }
 
 .recipe-time {
