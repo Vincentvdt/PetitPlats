@@ -70,7 +70,7 @@
       </div>
       <div class="hero-title">
         <h1>CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET DÉLICIEUSES</h1>
-        <div class="search-bar">
+        <div class="dropdown_search-bar">
           <label>
             <input placeholder="Rechercher une recette, un ingrédient, ..." type="text">
             <svg class="search-bar_reset" fill="none" height="17" viewBox="0 0 17 17" width="17"
@@ -93,7 +93,139 @@
     <main>
       <section class="gallery">
         <div class="filters">
-          <!-- Filters and Tags -->
+          <div class="dropdown-list">
+            <div class="dropdown" data-toggle="collapse" id="ingredient">
+              <div class="select">
+                <button aria-expanded="false" aria-haspopup="true" class="select-btn">
+                  Ingrédients
+                  <svg fill="none" height="8" viewBox="0 0 15 8" width="15" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L7.5 7L14 1" stroke="#1B1B1B" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div aria-hidden="true" aria-labelledby="menu-button" aria-orientation="vertical" class="options"
+                   role="menu">
+                <div class="dropdown_search-bar">
+                  <label for="ingredientInput"></label>
+                  <input id="ingredientInput" tabindex="-1" type="search">
+                  <svg aria-hidden="true" class="reset-icon" fill="none" height="8" tabindex="-1" viewBox="0 0 8 8"
+                       width="8"
+                       xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 7L4 4M4 4L1 1M4 4L7 1M4 4L1 7" stroke="#7A7A7A" stroke-linecap="round"
+                          stroke-linejoin="round"
+                    />
+                  </svg>
+                  <svg aria-hidden="true" class="search-icon" fill="none" height="14" viewBox="0 0 14 14"
+                       width="14" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="5" cy="5" r="4.75" stroke="#7A7A7A" stroke-width="0.5"/>
+                    <line stroke="#7A7A7A" stroke-width="0.5" x1="9.17678" x2="13.6768" y1="9.32322"
+                          y2="13.8232"/>
+                  </svg>
+                </div>
+                <div class="options-wrapper">
+                  <a class="option-item" data-value="tomates" href="#" role="menuitem" tabindex="-1">Tomates</a>
+                  <a class="option-item" data-value="cerises" href="#" role="menuitem" tabindex="-1">Cerises</a>
+                  <a class="option-item" data-value="cactus" href="#" role="menuitem" tabindex="-1">Cactus</a>
+                  <a class="option-item" data-value="haricots" href="#" role="menuitem" tabindex="-1">Haricots</a>
+                </div>
+              </div>
+            </div>
+            <div class="dropdown" data-toggle="collapse" id="appareil">
+              <div class="select">
+                <button aria-expanded="false" aria-haspopup="true" class="select-btn">
+                  Appareils
+                  <svg fill="none" height="8" viewBox="0 0 15 8" width="15" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L7.5 7L14 1" stroke="#1B1B1B" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div aria-hidden="true" aria-labelledby="menu-button" aria-orientation="vertical" class="options"
+                   role="menu">
+                <div class="dropdown_search-bar">
+                  <label for="appareilInput"></label>
+                  <input id="appareilInput" tabindex="-1" type="search">
+                  <svg aria-hidden="true" class="reset-icon" fill="none" height="8" tabindex="-1" viewBox="0 0 8 8"
+                       width="8"
+                       xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 7L4 4M4 4L1 1M4 4L7 1M4 4L1 7" stroke="#7A7A7A" stroke-linecap="round"
+                          stroke-linejoin="round"
+                    />
+                  </svg>
+                  <svg aria-hidden="true" class="search-icon" fill="none" height="14" viewBox="0 0 14 14"
+                       width="14" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="5" cy="5" r="4.75" stroke="#7A7A7A" stroke-width="0.5"/>
+                    <line stroke="#7A7A7A" stroke-width="0.5" x1="9.17678" x2="13.6768" y1="9.32322"
+                          y2="13.8232"/>
+                  </svg>
+                </div>
+                <div class="options-wrapper">
+                  <a class="option-item" data-value="tomates" href="#" role="menuitem" tabindex="-1">Tomates</a>
+                  <a class="option-item" data-value="cerises" href="#" role="menuitem" tabindex="-1">Cerises</a>
+                  <a class="option-item" data-value="cactus" href="#" role="menuitem" tabindex="-1">Cactus</a>
+                  <a class="option-item" data-value="haricots" href="#" role="menuitem" tabindex="-1">Haricots</a>
+                </div>
+              </div>
+            </div>
+            <div class="dropdown" data-toggle="collapse" id="ustentil">
+              <div class="select">
+                <button aria-expanded="false" aria-haspopup="true" class="select-btn">
+                  Ustensiles
+                  <svg fill="none" height="8" viewBox="0 0 15 8" width="15" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L7.5 7L14 1" stroke="#1B1B1B" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div aria-hidden="true" aria-labelledby="menu-button" aria-orientation="vertical" class="options"
+                   role="menu">
+                <div class="dropdown_search-bar">
+                  <label for="ustentilInput"></label>
+                  <input id="ustentilInput" tabindex="-1" type="search">
+                  <svg aria-hidden="true" class="reset-icon" fill="none" height="8" tabindex="-1" viewBox="0 0 8 8"
+                       width="8"
+                       xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 7L4 4M4 4L1 1M4 4L7 1M4 4L1 7" stroke="#7A7A7A" stroke-linecap="round"
+                          stroke-linejoin="round"
+                    />
+                  </svg>
+                  <svg aria-hidden="true" class="search-icon" fill="none" height="14" viewBox="0 0 14 14"
+                       width="14" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="5" cy="5" r="4.75" stroke="#7A7A7A" stroke-width="0.5"/>
+                    <line stroke="#7A7A7A" stroke-width="0.5" x1="9.17678" x2="13.6768" y1="9.32322"
+                          y2="13.8232"/>
+                  </svg>
+                </div>
+                <div class="options-wrapper">
+                  <a class="option-item" data-value="tomates" href="#" role="menuitem" tabindex="-1">Tomates</a>
+                  <a class="option-item" data-value="cerises" href="#" role="menuitem" tabindex="-1">Cerises</a>
+                  <a class="option-item" data-value="cactus" href="#" role="menuitem" tabindex="-1">Cactus</a>
+                  <a class="option-item" data-value="haricots" href="#" role="menuitem" tabindex="-1">Haricots</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tags">
+            <div class="tag-item">
+              Coco
+              <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5" stroke="#1B1B1B" stroke-linecap="round"
+                      stroke-linejoin="round" stroke-width="2.16667"/>
+              </svg>
+            </div>
+            <div class="tag-item">
+              Coco
+              <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5" stroke="#1B1B1B" stroke-linecap="round"
+                      stroke-linejoin="round" stroke-width="2.16667"/>
+              </svg>
+            </div>
+            <div class="tag-item">
+              Coco
+              <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5" stroke="#1B1B1B" stroke-linecap="round"
+                      stroke-linejoin="round" stroke-width="2.16667"/>
+              </svg>
+            </div>
+          </div>
         </div>
         <div class="recipes">
         </div>

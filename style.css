@@ -9,6 +9,7 @@
 body, html {
     font-size: 16px;
     font-family: Anton, serif;
+    background: #EDEDED;
 }
 
 .hero-img {
@@ -115,7 +116,7 @@ body, html {
     stroke: white;
 }
 
-.search-bar label {
+.dropdown_search-bar label {
     position: relative;
     flex: 1;
 }
@@ -272,4 +273,201 @@ main {
 .recipe-ingredient_quantity {
     color: var(--grey, #7A7A7A);
     font-weight: 400;
+}
+
+/*
+    Dropdown
+*/
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: flex-start;
+    margin-bottom: 54px;
+    gap: 21px;
+}
+
+.tags {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tag-item {
+    border-radius: 10px;
+    background: #FFD15B;
+    display: inline-flex;
+    gap: 60px;
+    padding: 17px 18px;
+    align-items: center;
+    color: #000;
+    font-family: Manrope, serif;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.tag-item svg {
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+}
+
+.tag-item svg:hover {
+    transform: scale(1.1);
+}
+
+.tag-item svg * {
+    stroke-width: 2px;
+    stroke: var(--black, #1B1B1B);
+}
+
+
+.dropdown-list {
+    display: flex;
+    gap: 64px;
+
+}
+
+.dropdown {
+    position: relative;
+    text-align: left;
+    display: inline-block;
+    z-index: 9999;
+    font-family: Manrope, serif;
+}
+
+.select-btn {
+    color: #1B1B1B;
+    font-family: Manrope, serif;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    line-height: normal;
+    padding: 1.06rem 1rem;
+    column-gap: 3.94rem;
+    background: white;
+    border: none;
+    border-radius: 0.688rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+
+.select-btn svg {
+    width: 0.8125rem;
+    height: 0.375rem;
+    transition: 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275)
+}
+
+
+.dropdown[data-toggle="extended"] .select-btn {
+    border-radius: 0.688rem 0.688rem 0 0;
+}
+
+
+.dropdown[data-toggle="extended"] .options {
+    display: flex;
+}
+
+.dropdown[data-toggle="extended"] .select-btn svg {
+    transform: rotate(180deg);
+}
+
+.options {
+    display: none;
+    position: absolute;
+    right: 0;
+    flex-direction: column;
+    transform-origin: top right;
+    width: 100%;
+    border-radius: 0 0 0.68rem 0.68rem;
+    background: #FFF;
+}
+
+.dropdown_search-bar {
+    position: relative;
+    display: flex;
+    margin: 0 0.7rem;
+}
+
+.dropdown_search-bar input[type="search"] {
+    font-family: Manrope, serif;
+    border-radius: 0.125rem;
+    padding: 0.5rem;
+    width: 100%;
+    color: #7A7A7A;
+    font-size: 0.875rem;
+    font-weight: 400;
+    border: 1px solid #C6C6C6;
+}
+
+.dropdown_search-bar input[type="search"]::-webkit-search-cancel-button {
+    display: none;
+}
+
+
+.dropdown_search-bar input:focus ~ .search-icon *, .search-icon:focus * {
+    stroke: black;
+}
+
+.search-icon {
+    display: block;
+    position: absolute;
+    right: 0.72rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.84375rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+}
+
+.reset-icon {
+    display: none;
+    width: 0.375rem;
+    height: 0.375rem;
+    flex-shrink: 0;
+    position: absolute;
+    right: 2.19rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: 150ms ease-in-out;
+}
+
+.reset-icon:hover, .reset-icon:focus {
+    transform: translateY(-50%) scale(2.01);
+}
+
+.no-options-found {
+    margin: 0;
+    text-align: center;
+    color: #878383;
+    font-size: 0.775rem;
+    font-weight: 400;
+}
+
+.options-wrapper {
+    padding: 0.70rem 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: left;
+}
+
+.option-item {
+    padding: 0.56rem 1rem;
+    text-decoration: none;
+    color: #1B1B1B;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.option-item:hover, .option-item:focus {
+    background: #FFD15B;
+    outline: none;
 }
