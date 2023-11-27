@@ -136,16 +136,50 @@ body, html {
     stroke: black
 }
 
+main {
+    padding: 21px 0 201px;
+    margin: 0 102px;
+}
+
 /*
     Recipe Card
 */
 
+.recipes {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
 .recipe-card {
+    margin-bottom: 66px;
+    position: relative;
     max-width: 380px;
+    min-height: 731px;
     border-radius: 21px;
     background: #FFF;
     box-shadow: 0 4px 34px 30px rgba(0, 0, 0, 0.04);
     overflow: hidden;
+}
+
+.recipe-time {
+    position: absolute;
+    right: 21px;
+    top: 21px;
+    display: inline-flex;
+    padding: 5px 15px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 14px;
+    background: var(--yellow, #FFD15B);
+}
+
+.recipe-time span {
+    color: var(--black, #1B1B1B);
+    text-align: center;
+    font-family: Manrope, serif;
+    font-size: 0.75rem;
+    font-weight: 400;
 }
 
 .recipe-card h3 {
