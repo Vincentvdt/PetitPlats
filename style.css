@@ -116,7 +116,7 @@ body, html {
     stroke: white;
 }
 
-.dropdown_search-bar label {
+.search-bar label {
     position: relative;
     flex: 1;
 }
@@ -140,6 +140,12 @@ body, html {
 main {
     padding: 21px 0 201px;
     margin: 0 102px;
+}
+
+@media screen and (max-width: 1440px) {
+    main {
+        margin: 0 51px;
+    }
 }
 
 /*
