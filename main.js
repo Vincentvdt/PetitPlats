@@ -12,21 +12,26 @@ const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 const updateTags = () => {
     tagsWrapper.innerHTML = ""
     const fragment = document.createDocumentFragment()
-    for (let type in tags) {
-        for (let tag of tags[type]) {
-            const tagElem = document.createElement("div");
-            tagElem.className = "tag-item";
-            tagElem.dataset.type = type
-            tagElem.dataset.value = tag.toLowerCase()
-            tagElem.innerHTML = `
-            ${tag}
+    console.log(tags)
+    tags.forEach(tag => {
+        const tagElem = document.createElement("div");
+        tagElem.className = "tag-item";
+        tagElem.dataset.type = tag.type
+        tagElem.dataset.value = tag.name.toLowerCase()
+        tagElem.innerHTML = `
+            ${capitalize(tag.name)}
             <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5"  stroke-linecap="round"
                 stroke-linejoin="round" stroke-width="2.16667"/>
             </svg>`
-            fragment.appendChild(tagElem)
-        }
-    }
+        fragment.appendChild(tagElem)
+
+        tagElem.querySelector("svg").addEventListener("click", () => {
+            let tagIndex = tags.indexOf(tag)
+            tags.splice(tagIndex, 1)
+            updateTags()
+        })
+    })
     tagsWrapper.appendChild(fragment)
 }
 
@@ -163,12 +168,12 @@ class Dropdown {
     }
 
     createTag(type, value) {
-        if (tags[type]) {
-            tags[type].push(capitalize(value));
-        } else {
-            tags[type] = [capitalize(value)];
-        }
+        tags.push({
+            name: value,
+            type
+        })
         updateTags()
+
     }
 
     getTagsByType(type) {
