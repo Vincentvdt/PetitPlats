@@ -12,43 +12,28 @@ const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 const updateTags = () => {
     tagsWrapper.innerHTML = ""
     const fragment = document.createDocumentFragment()
-    tags.forEach(tag => {
-        const tagElem = document.createElement("div");
-        tagElem.className = "tag-item";
-        tagElem.dataset.type = tag.type
-        tagElem.dataset.value = tag.name.toLowerCase()
-        tagElem.innerHTML = `
-            ${capitalize(tag.name)}
+    for (let type in tags) {
+        for (let tag of tags[type]) {
+            const tagElem = document.createElement("div");
+            tagElem.className = "tag-item";
+            tagElem.dataset.type = type
+            tagElem.dataset.value = tag.toLowerCase()
+            tagElem.innerHTML = `
+            ${tag}
             <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5" stroke="#1B1B1B" stroke-linecap="round"
                 stroke-linejoin="round" stroke-width="2.16667"/>
             </svg>`
-
-        const removeTagElement = tagElem.querySelector("svg")
-        removeTagElement.addEventListener("click", () => {
-            const indexToRemove = tags.indexOf(tag);
-            if (indexToRemove !== -1) {
-                tags.splice(indexToRemove, 1);
-                updateTags();
-                let dropdown = document.querySelector(`#${tag.type}`);
-                let options = dropdown.querySelectorAll(".option-item");
-                for (const option of options) {
-                    if (option.dataset.value === tagElem.dataset.value) {
-                        option.style.display = "flex";
-                        break;
-                    }
-                }
-            }
-        });
-
-        fragment.appendChild(tagElem)
-    })
+            fragment.appendChild(tagElem)
+        }
+    }
     tagsWrapper.appendChild(fragment)
 }
 
 class Dropdown {
     constructor(dropdownElement, options) {
         this.dropdown = dropdownElement
+        this.type = this.dropdown.id
         this.btn = this.dropdown.querySelector(".select-btn")
         this.input = this.dropdown.querySelector("input")
         this.optionsList = this.dropdown.querySelector(".options-wrapper")
@@ -57,7 +42,7 @@ class Dropdown {
         this.insideFocusableElements = this.dropdown.querySelectorAll("*[tabindex='-1']")
         this.outsideFocusableElements = this.getFocusableElementsOutsideDropdown()
         this.value = null
-        this.linkedSelect = [];
+        this.linkedSelect = null;
     }
 
     createOptionDOM(option) {
@@ -160,23 +145,41 @@ class Dropdown {
                     option.setAttribute("aria-selected", true)
                     : option.removeAttribute("aria-selected")
             })
+            this.createTag(this.type, this.value)
+            this.hideOption(e.target)
             this.close()
-            this.reset()
-            tags.push({
-                name: this.value,
-                type: this.dropdown.id
-            })
-            updateTags()
 
-            // Find the index of the selected option
-            let selectedIndex = Array.from(this.options).indexOf(e.target);
-            // Remove the selected option from the dropdown list
-            this.options[selectedIndex].style.display = "none"
         }
     }
 
+    hideOption(option) {
+        let optionIndex = Array.from(this.options).indexOf(option)
+        this.options[optionIndex].style.display = "none";
+    }
+
+    showOption(option) {
+        let optionIndex = Array.from(this.options).indexOf(option)
+        this.options[optionIndex].style.display = "flex";
+    }
+
+    createTag(type, value) {
+        if (tags[type]) {
+            tags[type].push(capitalize(value));
+        } else {
+            tags[type] = [capitalize(value)];
+        }
+        updateTags()
+    }
+
+    getTagsByType(type) {
+        return tags.filter(tag => tag.type === type)
+    }
+
     link(target) {
-        this.linkedSelect = target
+        this.linkedSelect = {
+            target,
+            type: target.type
+        }
     }
 
     handleKey(e) {
