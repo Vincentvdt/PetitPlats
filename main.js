@@ -12,7 +12,6 @@ const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 const updateTags = () => {
     tagsWrapper.innerHTML = ""
     const fragment = document.createDocumentFragment()
-    console.log(tags)
     tags.forEach(tag => {
         const tagElem = document.createElement("div");
         tagElem.className = "tag-item";
@@ -27,9 +26,24 @@ const updateTags = () => {
         fragment.appendChild(tagElem)
 
         tagElem.querySelector("svg").addEventListener("click", () => {
-            let tagIndex = tags.indexOf(tag)
-            tags.splice(tagIndex, 1)
-            updateTags()
+            const tagIndex = tags.indexOf(tag);
+
+            if (tagIndex !== -1) {
+                tags.splice(tagIndex, 1);
+
+                const tagTypeElement = document.querySelector(`#${tag.type}`);
+                const optionItems = tagTypeElement.querySelectorAll(".option-item");
+
+                const matchingOption = Array.from(optionItems).find(option => {
+                    return option.dataset.value.toLowerCase() === tag.name.toLowerCase();
+                });
+
+                if (matchingOption) {
+                    matchingOption.style.display = "flex";
+                }
+
+                updateTags();
+            }
         })
     })
     tagsWrapper.appendChild(fragment)
