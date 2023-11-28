@@ -21,7 +21,7 @@ const updateTags = () => {
             tagElem.innerHTML = `
             ${tag}
             <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5" stroke="#1B1B1B" stroke-linecap="round"
+                <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5"  stroke-linecap="round"
                 stroke-linejoin="round" stroke-width="2.16667"/>
             </svg>`
             fragment.appendChild(tagElem)

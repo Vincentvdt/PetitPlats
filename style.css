@@ -313,12 +313,26 @@ main {
     font-family: Manrope, serif;
     font-size: 14px;
     font-weight: 400;
+    transition: 100ms ease-in-out;
+    cursor: default;
 }
 
 .tag-item svg {
     width: 10px;
     height: 10px;
     cursor: pointer;
+}
+
+.tag-item[data-type="ingredient"]:hover {
+    background: tomato;
+}
+
+.tag-item[data-type="appareil"]:hover {
+    background: limegreen;
+}
+
+.tag-item[data-type="ustentil"]:hover {
+    background: steelblue;
 }
 
 .tag-item svg:hover {
