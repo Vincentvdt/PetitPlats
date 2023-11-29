@@ -25,7 +25,7 @@ const updateTags = () => {
             </svg>`
         fragment.appendChild(tagElem)
 
-        tagElem.querySelector("svg").addEventListener("click", () => {
+        tagElem.addEventListener("click", () => {
             const tagIndex = tags.indexOf(tag);
 
             if (tagIndex !== -1) {
@@ -52,16 +52,50 @@ const updateTags = () => {
 class Dropdown {
     constructor(dropdownElement, options) {
         this.dropdown = dropdownElement
+        this.initialOptions = options
+        this.optionElements = []
+
         this.type = this.dropdown.id
+        this.value = null
+
         this.btn = this.dropdown.querySelector(".select-btn")
         this.input = this.dropdown.querySelector("input")
-        this.optionsList = this.dropdown.querySelector(".options-wrapper")
-        this.options = this.createOptionsList(options)
+        this.optionsContainer = this.dropdown.querySelector(".options-wrapper")
         this.resetBtn = this.dropdown.querySelector(".reset-icon")
-        this.insideFocusableElements = this.dropdown.querySelectorAll("*[tabindex='-1']")
-        this.outsideFocusableElements = this.getFocusableElementsOutsideDropdown()
-        this.value = null
-        this.linkedSelect = null;
+    }
+
+    init() {
+        this.updateDisplayedOptions(this.initialOptions)
+        this.focusableInsideElements = this.dropdown.querySelectorAll("*[tabindex='-1']:not(.options-wrapper)")
+        this.focusableOutsideElements = this.getFocusableElementsOutsideDropdown()
+
+        if (this.input.value) {
+            this.resetBtn.style.display = "block"
+            let isHidden = this.resetBtn.style.display === "block" ? "false" : "true";
+            this.resetBtn.setAttribute("aria-hidden", isHidden);
+        }
+
+        this.setEventListener()
+    }
+
+    setEventListener() {
+        this.btn.addEventListener("click", this.toggle.bind(this))
+        this.resetBtn.addEventListener("click", this.reset.bind(this))
+        this.input.addEventListener('input', e => {
+            e.preventDefault();
+            const value = this.input.value;
+            this.resetBtn.style.display = value ? "block" : "none";
+            let hidden = this.resetBtn.style.display === "block" ? "false" : "true"
+            this.resetBtn.setAttribute("aria-hidden", hidden)
+        })
+    }
+
+    createOptionsList(options) {
+        const fragment = document.createDocumentFragment()
+        options.forEach(option => {
+            fragment.appendChild(this.createOptionDOM(option))
+        })
+        return fragment
     }
 
     createOptionDOM(option) {
@@ -76,77 +110,43 @@ class Dropdown {
         return link
     }
 
-    createOptionsList(options) {
-        const fragment = document.createDocumentFragment()
-        options.forEach(option => {
-            fragment.appendChild(this.createOptionDOM(option))
-        })
-        this.optionsList.appendChild(fragment)
-        return this.dropdown.querySelectorAll(".option-item")
-    }
-
     getFocusableElementsOutsideDropdown() {
         const focusableElements = document.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
         return Array.from(focusableElements).filter(element => !this.dropdown.contains(element));
-    }
-
-    init() {
-        if (this.input.value) {
-            this.resetBtn.style.display = "block"
-            let hidden = this.resetBtn.style.display === "block" ? "false" : "true"
-            this.resetBtn.setAttribute("aria-hidden", hidden)
-        }
-
-        this.btn.addEventListener("click", this.toggle.bind(this))
-        this.resetBtn.addEventListener("click", this.reset.bind(this))
-
-        this.input.addEventListener('input', e => {
-            e.preventDefault();
-            const value = this.input.value;
-            this.resetBtn.style.display = value ? "block" : "none";
-            let hidden = this.resetBtn.style.display === "block" ? "false" : "true"
-            this.resetBtn.setAttribute("aria-hidden", hidden)
-        })
     }
 
     toggle() {
         this.dropdown.dataset.toggle === "collapse" ? this.open() : this.close()
     }
 
-    updateOptions(options) {
-        this.optionsList.innerHTML = "";
-        options.forEach(option => this.optionsList.appendChild(option))
+    updateDisplayedOptions(newOptions) {
+        if (!Array.isArray(newOptions) || !newOptions.every(option => typeof option === "string")) {
+            console.error(newOptions, "Please provide a valid array of strings for options");
+            return;
+        }
+
+        let updatedOptionsList = this.createOptionsList(newOptions);
+        this.optionsContainer.innerHTML = "";
+        this.optionsContainer.appendChild(updatedOptionsList);
+        this.optionElements = this.dropdown.querySelectorAll(".option-item");
     }
 
     searchOnChange(e) {
-        const inputValue = e.target.value.toLowerCase().trim();
+        const searchTerm = e.target.value.toLowerCase().trim();
 
-        let newOptions = inputValue.length >= 3
-            ? Array.from(this.options).filter(option =>
-                option.dataset.value.toLowerCase().includes(inputValue)
-            )
-            : this.options;
-        this.updateOptions(newOptions);
-        if (newOptions.length === 0) {
-            const noFoundDOM = document.createElement('p');
-            noFoundDOM.textContent = "Aucun résultat";
-            noFoundDOM.className = 'no-options-found';
-            this.optionsList.innerHTML = "";
-            this.optionsList.appendChild(noFoundDOM);
-        }
-    }
+        let filteredOptions = searchTerm.length >= 3
+            ? this.initialOptions.filter(option => option.toLowerCase().includes(searchTerm))
+            : this.initialOptions;
+        this.updateDisplayedOptions(filteredOptions);
 
-    arrowNavigationHandler(direction) {
-        const lastIndex = this.options.length - 1;
-        if (this.index < 0 || this.index === null) {
-            this.index = 0;
-        } else if (direction === "ArrowDown") {
-            this.index = (this.index < lastIndex) ? this.index + 1 : 0;
-        } else if (direction === "ArrowUp") {
-            this.index = (this.index > 0) ? this.index - 1 : lastIndex;
+        if (filteredOptions.length === 0) {
+            const noResultsElement = document.createElement('p');
+            noResultsElement.textContent = "No results found";
+            noResultsElement.className = 'no-options-found';
+            this.optionsContainer.innerHTML = "";
+            this.optionsContainer.appendChild(noResultsElement);
         }
 
-        this.options[this.index].focus();
     }
 
     handleClick(e) {
@@ -157,28 +157,68 @@ class Dropdown {
             return;
         }
         // Select an option
-        if (Array.from(this.options).includes(e.target)) {
-            this.value = e.target.dataset.value
-            this.options.forEach(option => {
-                option === e.target ?
-                    option.setAttribute("aria-selected", true)
-                    : option.removeAttribute("aria-selected")
+
+        if (Array.from(this.optionElements).includes(e.target)) {
+            if (e.target.style.display === "none") {
+                return;
+            }
+            const clickedOption = Array.from(this.optionElements).find(option => option === e.target);
+            if (clickedOption) {
+                clickedOption.style.display = 'none';
+                this.createTag(this.type, clickedOption.dataset.value);
+                this.close();
+            }
+
+            const filteredRecipes = recipes.filter(recipe => {
+                const recipeTags = new Set([
+                    ...recipe.ingredients.map(ingredient => ingredient.ingredient.toLowerCase()),
+                    recipe.appliance.toLowerCase(),
+                    ...recipe.ustensils.map(ustentil => ustentil.toLowerCase())
+                ]);
+
+                for (const tag of tags) {
+                    const matchingTag = recipeTags.has(tag.name.toLowerCase());
+
+                    if (!matchingTag) {
+                        return false;
+                    }
+                }
+
+                return true;
             })
-            this.createTag(this.type, this.value)
-            this.hideOption(e.target)
-            this.close()
+            console.log(filteredRecipes)
 
+            /*
+            if (this.linkedSelect && this.linkedSelect.type === "appareil") {
+                let ingredients = this.getTagsByType(this.type)
+                let filteredRecipes = recipes.filter(recipe =>
+                    ingredients.every(ingredient =>
+                        recipe.ingredients.some(item => item.ingredient.toLowerCase() === ingredient.toLowerCase())
+                    )
+                )
+
+                let filteredAppliance = new Set()
+                filteredRecipes.map(recipe => filteredAppliance.add(recipe.appliance))
+                this.linkedSelect.updateDisplayedOptions(Array.from(filteredAppliance))
+
+            } else if (this.linkedSelect && this.linkedSelect.type === "ustentil") {
+                let appareils = this.getTagsByType(this.type)
+                const filteredRecipes = recipes.filter(recipe =>
+                    appareils.every(appliance =>
+                        recipe.appliance.toLowerCase() === appliance.toLowerCase()
+                    )
+                );
+
+                let filteredUstentils = new Set()
+                filteredRecipes.forEach(recipe => {
+                    recipe.ustensils.forEach(ustentil => {
+                        filteredUstentils.add(capitalize(ustentil));
+                    });
+                });
+                this.linkedSelect.updateDisplayedOptions(Array.from(filteredUstentils))
+            }
+            */
         }
-    }
-
-    hideOption(option) {
-        let optionIndex = Array.from(this.options).indexOf(option)
-        this.options[optionIndex].style.display = "none";
-    }
-
-    showOption(option) {
-        let optionIndex = Array.from(this.options).indexOf(option)
-        this.options[optionIndex].style.display = "flex";
     }
 
     createTag(type, value) {
@@ -187,58 +227,48 @@ class Dropdown {
             type
         })
         updateTags()
-
     }
 
     getTagsByType(type) {
-        return tags.filter(tag => tag.type === type)
+        return tags.filter(tag => tag.type === type).map(tag => tag.name)
     }
 
     link(target) {
-        this.linkedSelect = {
-            target,
-            type: target.type
-        }
+        this.linkedSelect = target
     }
 
     handleKey(e) {
         // Escape
         if (e.code === "Escape") {
             this.close()
-            return
-        }
-        // Arrow Navigation
-        if (e.code === "ArrowUp" || e.code === "ArrowDown") {
-            this.arrowNavigationHandler(e.code)
         }
     }
 
     open() {
-        this.insideFocusableElements.forEach(elem => {
+        this.focusableInsideElements.forEach(elem => {
             elem.setAttribute("tabindex", "0")
             elem.setAttribute("aria-hidden", "false")
         })
-        this.outsideFocusableElements.forEach(elem => elem.setAttribute("tabindex", "-1"))
+        this.focusableOutsideElements.forEach(elem => elem.setAttribute("tabindex", "-1"))
 
         this.boundClick = this.handleClick.bind(this)
         this.boundKey = this.handleKey.bind(this)
         this.boundSearchOnChange = this.searchOnChange.bind(this)
 
         document.addEventListener("click", this.boundClick)
-        this.index = -1;
         document.addEventListener("keydown", this.boundKey)
         this.input.addEventListener("input", this.boundSearchOnChange)
 
-        this.dropdown.dataset.toggle = "extended";
-        this.input.focus()
+        this.dropdown.dataset.toggle = "extended"
+
     }
 
     close() {
-        this.insideFocusableElements.forEach(elem => {
+        this.focusableInsideElements.forEach(elem => {
             elem.setAttribute("tabindex", "-1")
             elem.setAttribute("aria-hidden", "true")
         })
-        this.outsideFocusableElements.forEach(elem => {
+        this.focusableOutsideElements.forEach(elem => {
             elem.setAttribute("tabindex", "0")
             elem.setAttribute("aria-hidden", "false")
         })
@@ -246,14 +276,13 @@ class Dropdown {
         document.removeEventListener("keydown", this.boundKey)
         this.input.removeEventListener("input", this.boundSearchOnChange)
         this.dropdown.dataset.toggle = "collapse"
-        this.btn.focus()
     }
 
     reset() {
         this.input.value = null;
         this.resetBtn.style.display = "none";
         this.resetBtn.setAttribute("aria-hidden", "true");
-        this.updateOptions(this.options)
+        this.updateDisplayedOptions(this.initialOptions)
         this.input.focus()
     }
 
@@ -295,3 +324,6 @@ const dropdown3 = new Dropdown(document.querySelector("#ustentil"), Array.from(u
 dropdown3.init()
 dropdown2.link(dropdown3)
 
+document.addEventListener("keydown", e => {
+    console.log(document.activeElement)
+})

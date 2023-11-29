@@ -314,7 +314,7 @@ main {
     font-size: 14px;
     font-weight: 400;
     transition: 100ms ease-in-out;
-    cursor: default;
+    cursor: pointer;
 }
 
 .tag-item svg {
@@ -324,15 +324,21 @@ main {
 }
 
 .tag-item[data-type="ingredient"]:hover {
-    background: tomato;
+    background: rgba(255, 99, 71, 0.15);
+    outline: 2px dashed tomato;
+    transform: translateY(-1px) rotate(1deg);
 }
 
 .tag-item[data-type="appareil"]:hover {
-    background: limegreen;
+    background: rgba(50, 205, 50, 0.15);
+    outline: 2px dashed limegreen;
+    transform: translateY(1px) rotate(3deg);
 }
 
 .tag-item[data-type="ustentil"]:hover {
-    background: steelblue;
+    background: rgba(70, 130, 180, 0.15);
+    outline: 2px dashed steelblue;
+    transform: translateY(-1px) rotate(-3deg);
 }
 
 .tag-item svg:hover {
@@ -478,7 +484,7 @@ main {
     flex-direction: column;
     width: 100%;
     text-align: left;
-    height: 216px;
+    max-height: 216px;
     overflow-y: scroll;
     scrollbar-color: var(--grey) white;
     scrollbar-width: thin;
