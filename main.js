@@ -1,293 +1,162 @@
-const gallery = document.querySelector(".recipes")
-const tagsWrapper = document.querySelector(".tags")
-const fragment = document.createDocumentFragment()
-let tags = []
-recipes.forEach(recipe => {
-    const card = createRecipeTemplate(recipe).getRecipeHTML();
-    fragment.appendChild(card);
-});
+const gallery = document.querySelector(".recipes");
+const tagsWrapper = document.querySelector(".tags");
+const searchBar = document.querySelector(".search-bar input");
 
-gallery.appendChild(fragment);
+let tags = [];
+let displayedRecipes = [];
+
+// Function to display recipes
+const displayRecipes = recipes => {
+    displayedRecipes = [];
+    const fragment = document.createDocumentFragment();
+
+    recipes.forEach(recipe => {
+        const card = createRecipeTemplate(recipe).getRecipeHTML();
+        displayedRecipes.push(card);
+        fragment.appendChild(card);
+    });
+
+    gallery.innerHTML = "";
+    gallery.appendChild(fragment);
+    updateRecipesCounter();
+};
+
+// Function to update recipes counter
+const updateRecipesCounter = () => {
+    const counter = document.querySelector(".recipes_count");
+
+    if (displayedRecipes.length === 0) {
+        counter.textContent = "Aucune recette";
+        gallery.textContent = "Aucune recette";
+    } else {
+        counter.textContent = `${displayedRecipes.length.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+        })} ${displayedRecipes.length === 1 ? "recette" : "recettes"}`;
+    }
+};
+
+// Display initial recipes
+displayRecipes(recipes);
+
+// Function to capitalize the first letter of a string
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+// Function to update tags
 const updateTags = () => {
-    tagsWrapper.innerHTML = ""
-    const fragment = document.createDocumentFragment()
+    tagsWrapper.innerHTML = "";
+    const fragment = document.createDocumentFragment();
+
     tags.forEach(tag => {
         const tagElem = document.createElement("div");
         tagElem.className = "tag-item";
-        tagElem.dataset.type = tag.type
-        tagElem.dataset.value = tag.name.toLowerCase()
+        tagElem.dataset.type = tag.type;
+        tagElem.dataset.value = tag.name.toLowerCase();
         tagElem.innerHTML = `
             ${capitalize(tag.name)}
             <svg fill="none" height="13" viewBox="0 0 14 13" width="14" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 11.5L7 6.5M7 6.5L2 1.5M7 6.5L12 1.5M7 6.5L2 11.5"  stroke-linecap="round"
                 stroke-linejoin="round" stroke-width="2.16667"/>
-            </svg>`
-        fragment.appendChild(tagElem)
+            </svg>`;
+        fragment.appendChild(tagElem);
 
-        tagElem.addEventListener("click", () => {
-            const tagIndex = tags.indexOf(tag);
+        // Remove Tag
+        tagElem.addEventListener("click", () => removeTag(tag));
+    });
 
-            if (tagIndex !== -1) {
-                tags.splice(tagIndex, 1);
+    tagsWrapper.appendChild(fragment);
 
-                const tagTypeElement = document.querySelector(`#${tag.type}`);
-                const optionItems = tagTypeElement.querySelectorAll(".option-item");
+    updateFilteredRecipes();
+};
 
-                const matchingOption = Array.from(optionItems).find(option => {
-                    return option.dataset.value.toLowerCase() === tag.name.toLowerCase();
-                });
+// Removes a tag from the tags array and update displayed tags.
+const removeTag = tag => {
+    const tagIndex = tags.indexOf(tag);
 
-                if (matchingOption) {
-                    matchingOption.style.display = "flex";
-                }
+    if (tagIndex !== -1) {
+        tags.splice(tagIndex, 1);
 
-                updateTags();
-            }
-        })
-    })
-    tagsWrapper.appendChild(fragment)
+        const tagTypeElement = document.querySelector(`#${tag.type}`);
+        const optionItems = tagTypeElement.querySelectorAll(".option-item");
+
+        const matchingOption = Array.from(optionItems).find(option => {
+            return option.dataset.value.toLowerCase() === tag.name.toLowerCase();
+        });
+
+        if (matchingOption) {
+            matchingOption.style.display = "flex";
+        }
+
+        updateTags();
+    }
 }
 
-class Dropdown {
-    constructor(dropdownElement, options) {
-        this.dropdown = dropdownElement
-        this.initialOptions = options
-        this.optionElements = []
-
-        this.type = this.dropdown.id
-        this.value = null
-
-        this.btn = this.dropdown.querySelector(".select-btn")
-        this.input = this.dropdown.querySelector("input")
-        this.optionsContainer = this.dropdown.querySelector(".options-wrapper")
-        this.resetBtn = this.dropdown.querySelector(".reset-icon")
+//  Updates the dropdown filters based on the filtered recipes
+const updateFilters = filteredRecipes => {
+    let filteredOptions = getAllIngredientsAndTools(filteredRecipes);
+    let categorizedTags = {
+        ingredients: tags.filter(tag => tag.type === "ingredient").map(tag => tag.name.toLowerCase()),
+        appliances: tags.filter(tag => tag.type === "appliance").map(tag => tag.name.toLowerCase()),
+        utensils: tags.filter(tag => tag.type === "utensil").map(tag => tag.name.toLowerCase()),
     }
 
-    init() {
-        this.updateDisplayedOptions(this.initialOptions)
-        this.focusableInsideElements = this.dropdown.querySelectorAll("*[tabindex='-1']:not(.options-wrapper)")
-        this.focusableOutsideElements = this.getFocusableElementsOutsideDropdown()
-
-        if (this.input.value) {
-            this.resetBtn.style.display = "block"
-            let isHidden = this.resetBtn.style.display === "block" ? "false" : "true";
-            this.resetBtn.setAttribute("aria-hidden", isHidden);
-        }
-
-        this.setEventListener()
+    filteredOptions = {
+        ingredients: filteredOptions.ingredients
+            .filter(ingredient => !categorizedTags.ingredients.includes(ingredient.toLowerCase())),
+        appliances: filteredOptions.appliances
+            .filter(appliance => !categorizedTags.appliances.includes(appliance.toLowerCase())),
+        utensils: filteredOptions.utensils
+            .filter(utensil => !categorizedTags.utensils.includes(utensil.toLowerCase())),
     }
 
-    setEventListener() {
-        this.btn.addEventListener("click", this.toggle.bind(this))
-        this.resetBtn.addEventListener("click", this.reset.bind(this))
-        this.input.addEventListener('input', e => {
-            e.preventDefault();
-            const value = this.input.value;
-            this.resetBtn.style.display = value ? "block" : "none";
-            let hidden = this.resetBtn.style.display === "block" ? "false" : "true"
-            this.resetBtn.setAttribute("aria-hidden", hidden)
-        })
-    }
-
-    createOptionsList(options) {
-        const fragment = document.createDocumentFragment()
-        options.forEach(option => {
-            fragment.appendChild(this.createOptionDOM(option))
-        })
-        return fragment
-    }
-
-    createOptionDOM(option) {
-        let value = option.trim()
-        let link = document.createElement('a')
-        link.className = "option-item"
-        link.dataset.value = option.toLowerCase()
-        link.setAttribute("role", "menuitem")
-        link.setAttribute("tabindex", "-1")
-        link.textContent = value
-        link.href = "#"
-        return link
-    }
-
-    getFocusableElementsOutsideDropdown() {
-        const focusableElements = document.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
-        return Array.from(focusableElements).filter(element => !this.dropdown.contains(element));
-    }
-
-    toggle() {
-        this.dropdown.dataset.toggle === "collapse" ? this.open() : this.close()
-    }
-
-    updateDisplayedOptions(newOptions) {
-        if (!Array.isArray(newOptions) || !newOptions.every(option => typeof option === "string")) {
-            console.error(newOptions, "Please provide a valid array of strings for options");
-            return;
-        }
-
-        let updatedOptionsList = this.createOptionsList(newOptions);
-        this.optionsContainer.innerHTML = "";
-        this.optionsContainer.appendChild(updatedOptionsList);
-        this.optionElements = this.dropdown.querySelectorAll(".option-item");
-    }
-
-    searchOnChange(e) {
-        const searchTerm = e.target.value.toLowerCase().trim();
-
-        let filteredOptions = searchTerm.length >= 3
-            ? this.initialOptions.filter(option => option.toLowerCase().includes(searchTerm))
-            : this.initialOptions;
-        this.updateDisplayedOptions(filteredOptions);
-
-        if (filteredOptions.length === 0) {
-            const noResultsElement = document.createElement('p');
-            noResultsElement.textContent = "No results found";
-            noResultsElement.className = 'no-options-found';
-            this.optionsContainer.innerHTML = "";
-            this.optionsContainer.appendChild(noResultsElement);
-        }
-
-    }
-
-    handleClick(e) {
-        e.preventDefault()
-        // Click outside the dropdown
-        if (!this.dropdown.contains(e.target)) {
-            this.close();
-            return;
-        }
-        // Select an option
-
-        if (Array.from(this.optionElements).includes(e.target)) {
-            if (e.target.style.display === "none") {
-                return;
-            }
-            const clickedOption = Array.from(this.optionElements).find(option => option === e.target);
-            if (clickedOption) {
-                clickedOption.style.display = 'none';
-                this.createTag(this.type, clickedOption.dataset.value);
-                this.close();
-            }
-
-            const filteredRecipes = recipes.filter(recipe => {
-                const recipeTags = new Set([
-                    ...recipe.ingredients.map(ingredient => ingredient.ingredient.toLowerCase()),
-                    recipe.appliance.toLowerCase(),
-                    ...recipe.ustensils.map(ustentil => ustentil.toLowerCase())
-                ]);
-
-                for (const tag of tags) {
-                    const matchingTag = recipeTags.has(tag.name.toLowerCase());
-
-                    if (!matchingTag) {
-                        return false;
-                    }
-                }
-
-                return true;
-            })
-            console.log(filteredRecipes)
-
-            /*
-            if (this.linkedSelect && this.linkedSelect.type === "appareil") {
-                let ingredients = this.getTagsByType(this.type)
-                let filteredRecipes = recipes.filter(recipe =>
-                    ingredients.every(ingredient =>
-                        recipe.ingredients.some(item => item.ingredient.toLowerCase() === ingredient.toLowerCase())
-                    )
-                )
-
-                let filteredAppliance = new Set()
-                filteredRecipes.map(recipe => filteredAppliance.add(recipe.appliance))
-                this.linkedSelect.updateDisplayedOptions(Array.from(filteredAppliance))
-
-            } else if (this.linkedSelect && this.linkedSelect.type === "ustentil") {
-                let appareils = this.getTagsByType(this.type)
-                const filteredRecipes = recipes.filter(recipe =>
-                    appareils.every(appliance =>
-                        recipe.appliance.toLowerCase() === appliance.toLowerCase()
-                    )
-                );
-
-                let filteredUstentils = new Set()
-                filteredRecipes.forEach(recipe => {
-                    recipe.ustensils.forEach(ustentil => {
-                        filteredUstentils.add(capitalize(ustentil));
-                    });
-                });
-                this.linkedSelect.updateDisplayedOptions(Array.from(filteredUstentils))
-            }
-            */
-        }
-    }
-
-    createTag(type, value) {
-        tags.push({
-            name: value,
-            type
-        })
-        updateTags()
-    }
-
-    getTagsByType(type) {
-        return tags.filter(tag => tag.type === type).map(tag => tag.name)
-    }
-
-    link(target) {
-        this.linkedSelect = target
-    }
-
-    handleKey(e) {
-        // Escape
-        if (e.code === "Escape") {
-            this.close()
-        }
-    }
-
-    open() {
-        this.focusableInsideElements.forEach(elem => {
-            elem.setAttribute("tabindex", "0")
-            elem.setAttribute("aria-hidden", "false")
-        })
-        this.focusableOutsideElements.forEach(elem => elem.setAttribute("tabindex", "-1"))
-
-        this.boundClick = this.handleClick.bind(this)
-        this.boundKey = this.handleKey.bind(this)
-        this.boundSearchOnChange = this.searchOnChange.bind(this)
-
-        document.addEventListener("click", this.boundClick)
-        document.addEventListener("keydown", this.boundKey)
-        this.input.addEventListener("input", this.boundSearchOnChange)
-
-        this.dropdown.dataset.toggle = "extended"
-
-    }
-
-    close() {
-        this.focusableInsideElements.forEach(elem => {
-            elem.setAttribute("tabindex", "-1")
-            elem.setAttribute("aria-hidden", "true")
-        })
-        this.focusableOutsideElements.forEach(elem => {
-            elem.setAttribute("tabindex", "0")
-            elem.setAttribute("aria-hidden", "false")
-        })
-        document.removeEventListener("click", this.boundClick)
-        document.removeEventListener("keydown", this.boundKey)
-        this.input.removeEventListener("input", this.boundSearchOnChange)
-        this.dropdown.dataset.toggle = "collapse"
-    }
-
-    reset() {
-        this.input.value = null;
-        this.resetBtn.style.display = "none";
-        this.resetBtn.setAttribute("aria-hidden", "true");
-        this.updateDisplayedOptions(this.initialOptions)
-        this.input.focus()
-    }
-
+    dropdown1.updateDisplayedOptions(Array.from(filteredOptions.ingredients))
+    dropdown2.updateDisplayedOptions(Array.from(filteredOptions.appliances))
+    dropdown3.updateDisplayedOptions(Array.from(filteredOptions.utensils))
 }
 
+// Function to extract tags from a recipe
+const getRecipeTags = recipe => {
+    const ingredients = recipe.ingredients.map(ingredient => ingredient.ingredient.toLowerCase());
+    const utensils = recipe.utensils.map(utensil => utensil.toLowerCase());
+
+    return new Set([...ingredients, recipe.appliance.toLowerCase(), ...utensils]);
+};
+
+// Function to update recipes based on filters
+const updateFilteredRecipes = () => {
+    const filteredRecipes = recipes.filter(recipe => {
+        const recipeTags = getRecipeTags(recipe);
+
+        const matchTitle = recipe.name.toLowerCase().includes(searchBar.value.toLowerCase().trim());
+        const matchTags = tags.every(tag => recipeTags.has(tag.name.toLowerCase()));
+
+        return matchTitle && matchTags;
+    });
+
+    displayRecipes(filteredRecipes);
+    updateFilters(filteredRecipes);
+};
+
+// Function to handle search
+function handleSearch() {
+    const searchQuery = searchBar.value.toLowerCase().trim();
+
+    const searchResults = recipes.filter(recipe => {
+        const recipeTags = getRecipeTags(recipe);
+        return (
+            recipe.name.toLowerCase().includes(searchQuery) ||
+            Array.from(recipeTags).some(tag => tag.includes(searchQuery))
+        );
+    });
+
+    displayRecipes(searchResults);
+    updateFilters(searchResults);
+}
+
+// Event listener for the search bar
+searchBar.addEventListener('input', handleSearch);
+
+// Extracts unique ingredients, appliances, and utensils from a list of recipes.
 function getAllIngredientsAndTools(recipes) {
     let ingredientsSet = new Set();
     let appliancesSet = new Set();
@@ -300,7 +169,7 @@ function getAllIngredientsAndTools(recipes) {
 
         appliancesSet.add(recipe.appliance.toLowerCase());
 
-        recipe.ustensils.forEach(utensil => {
+        recipe.utensils.forEach(utensil => {
             utensilsSet.add(utensil.toLowerCase());
         });
     });
@@ -312,18 +181,13 @@ function getAllIngredientsAndTools(recipes) {
     return {ingredients, appliances, utensils};
 }
 
-// Utilisation de la fonction avec la liste de recettes
 const {ingredients, appliances, utensils} = getAllIngredientsAndTools(recipes);
 
 const dropdown1 = new Dropdown(document.querySelector("#ingredient"), Array.from(ingredients));
-dropdown1.init()
-const dropdown2 = new Dropdown(document.querySelector("#appareil"), Array.from(appliances));
-dropdown2.init()
-dropdown1.link(dropdown2)
-const dropdown3 = new Dropdown(document.querySelector("#ustentil"), Array.from(utensils));
-dropdown3.init()
-dropdown2.link(dropdown3)
-
-document.addEventListener("keydown", e => {
-    console.log(document.activeElement)
-})
+dropdown1.init();
+const dropdown2 = new Dropdown(document.querySelector("#appliance"), Array.from(appliances));
+dropdown2.init();
+dropdown1.link(dropdown2);
+const dropdown3 = new Dropdown(document.querySelector("#utensil"), Array.from(utensils));
+dropdown3.init();
+dropdown2.link(dropdown3);
