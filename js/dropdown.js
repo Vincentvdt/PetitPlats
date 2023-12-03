@@ -41,10 +41,11 @@ class Dropdown {
         })
     }
 
-    createOptionsList(options) {
+    createOptionsList(newOptions) {
+        let options = newOptions.sort()
         const fragment = document.createDocumentFragment()
-        for (let i = 0; i < options.length; i++) {
-            fragment.appendChild(this.createOptionDOM(options[i]));
+        for (const element of options) {
+            fragment.appendChild(this.createOptionDOM(element));
         }
         return fragment
     }

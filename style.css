@@ -154,8 +154,9 @@ main {
 
 .recipes {
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
+    justify-content: flex-start;
+    column-gap: 3rem;
 }
 
 .recipe-card {
@@ -522,7 +523,18 @@ main {
     outline: none;
 }
 
+@media screen and (max-width: 1240px) {
+    .recipes {
+        column-gap: 2rem;
+    }
+
+    .recipe-card {
+        max-width: calc(50% - 1rem);
+    }
+}
+
 @media screen and (max-width: 1024px) {
+
 
     .gallery-header {
         flex-direction: column;
@@ -588,6 +600,7 @@ main {
 
         margin: 20px;
     }
+
 
     .recipe-card {
         max-width: unset;

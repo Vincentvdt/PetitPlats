@@ -130,11 +130,11 @@ const updateFilteredRecipes = () => {
         const matchTitle = recipe.name.toLowerCase().includes(searchBar.value.toLowerCase().trim());
         const matchTags = tags.every(tag => recipeTags.has(tag.name.toLowerCase()));
 
-        return matchTitle && matchTags;
+        return matchTags;
     });
-
     displayRecipes(filteredRecipes);
     updateFilters(filteredRecipes);
+
 };
 
 // Function to handle search
