@@ -149,14 +149,29 @@ class Dropdown {
         updateTags()
     }
 
-    link(target) {
-        this.linkedSelect = target
+    arrowNavigation(direction) {
+        const displayedOptionsArray = Array.from(this.displayedOptions);
+        let selectedIndex = displayedOptionsArray.indexOf(document.activeElement);
+
+        if (direction === "ArrowDown") {
+            selectedIndex = (selectedIndex + 1) % displayedOptionsArray.length;
+        } else if (direction === "ArrowUp") {
+            selectedIndex = (selectedIndex - 1 + displayedOptionsArray.length) % displayedOptionsArray.length;
+        }
+
+        displayedOptionsArray[selectedIndex].focus();
     }
 
     handleKey(e) {
+
         // Escape
         if (e.code === "Escape") {
             this.close()
+        }
+
+        if ((e.code === "ArrowUp" || e.code === "ArrowDown") && Array.from(this.displayedOptions).includes(e.target)) {
+            e.preventDefault()
+            this.arrowNavigation(e.code)
         }
     }
 

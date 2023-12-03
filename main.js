@@ -187,7 +187,5 @@ const dropdown1 = new Dropdown(document.querySelector("#ingredient"), Array.from
 dropdown1.init();
 const dropdown2 = new Dropdown(document.querySelector("#appliance"), Array.from(appliances));
 dropdown2.init();
-dropdown1.link(dropdown2);
 const dropdown3 = new Dropdown(document.querySelector("#utensil"), Array.from(utensils));
 dropdown3.init();
-dropdown2.link(dropdown3);
