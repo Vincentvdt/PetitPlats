@@ -112,7 +112,7 @@ class Dropdown {
             }
         } else {
             for (let i = 0; i < this.displayedOptions.length; i++) {
-                newOptions.push(capitalize(this.displayedOptions[i]))
+                newOptions.push(capitalize(this.displayedOptions[i].dataset.value.toLowerCase().trim()))
             }
         }
 
