@@ -1,17 +1,19 @@
 const createRecipeTemplate = ({id, image, name, time, description, ingredients}) => {
-    const picturePath = `./assets/img/${image}`;
+    const picturePath = `./assets/img/${image}`
 
     const generateIngredientsHTML = () => {
-        return ingredients.map(({ingredient: ingredientName, quantity, unit}) => {
-            const quantityString = `${quantity || ''} ${unit || ''}`.trim();
-            return `
-               <div class="recipe-ingredient">
-                  <p class="recipe-ingredient_name">${ingredientName}</p>
-                  <p class="recipe-ingredient_quantity">${quantityString}</p>
-               </div>
-           `;
-        }).join('');
-    };
+        let result = ""
+        for (const {ingredient: ingredientName, quantity, unit} of ingredients) {
+            const quantityString = `${quantity || ""} ${unit || ""}`.trim()
+            result += `
+           <div class="recipe-ingredient">
+              <p class="recipe-ingredient_name">${ingredientName}</p>
+              <p class="recipe-ingredient_quantity">${quantityString}</p>
+           </div>
+        `
+        }
+        return result
+    }
 
     const getRecipeHTML = () => {
         const htmlString = `
@@ -40,11 +42,11 @@ const createRecipeTemplate = ({id, image, name, time, description, ingredients})
                     </div>
                 </div>
             </article>
-        `;
-        const parser = new DOMParser();
-        const recipeNode = parser.parseFromString(htmlString, "text/html").body.firstChild;
-        return recipeNode.cloneNode(true);
-    };
+        `
+        const parser = new DOMParser()
+        const recipeNode = parser.parseFromString(htmlString, "text/html").body.firstChild
+        return recipeNode.cloneNode(true)
+    }
 
-    return {getRecipeHTML};
-};
+    return {getRecipeHTML}
+}
