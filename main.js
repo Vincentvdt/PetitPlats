@@ -133,10 +133,8 @@ const updateFilteredRecipes = () => {
 }
 
 // Function to handle search
-function handleSearch(e) {
-    e.preventDefault()
+function handleSearch() {
     const searchQuery = searchBar.value.toLowerCase().trim()
-
     const searchResults = recipes.filter(recipe => {
         const recipeTags = getRecipeTags(recipe)
         return (
@@ -150,7 +148,6 @@ function handleSearch(e) {
 }
 
 // Event listener for the search bar
-document.querySelector(".search-bar").addEventListener("submit", handleSearch)
 searchBar.addEventListener("input", handleSearch)
 
 // Extracts unique ingredients, appliances, and utensils from a list of recipes.

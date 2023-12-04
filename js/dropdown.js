@@ -17,7 +17,6 @@ class Dropdown {
     init() {
         this.updateDisplayedOptions(this.initialOptions)
         this.focusableInsideElements = this.dropdown.querySelectorAll("*[tabindex='-1']:not(.options-wrapper):not(.option-item)")
-        this.focusableOutsideElements = this.getFocusableElementsOutsideDropdown()
 
         if (this.input.value) {
             this.resetBtn.style.display = "block"
@@ -161,7 +160,7 @@ class Dropdown {
 
     open() {
         this.displayedOptions = this.dropdown.querySelectorAll(".option-item")
-
+        this.focusableOutsideElements = this.getFocusableElementsOutsideDropdown()
         this.setAttributes(this.focusableInsideElements, "1", "false")
         this.setAttributes(this.displayedOptions, "1", "false")
         this.setAttributes(this.focusableOutsideElements, "-1", "true")
