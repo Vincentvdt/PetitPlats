@@ -15,7 +15,7 @@ const createRecipeTemplate = ({id, image, name, time, description, ingredients})
 
     const getRecipeHTML = () => {
         const htmlString = `
-            <article class="recipe-card" id="${id}">
+            <article class="recipe-card" id="${id}" tabindex="0">
                 <div class="recipe-time">
                     <span>${time}min</span>
                 </div>
