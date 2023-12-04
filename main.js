@@ -10,11 +10,11 @@ const displayRecipes = recipes => {
     displayedRecipes = []
     const fragment = document.createDocumentFragment()
 
-    recipes.forEach(recipe => {
+    for (const recipe of recipes) {
         const card = createRecipeTemplate(recipe).getRecipeHTML()
         displayedRecipes.push(card)
         fragment.appendChild(card)
-    })
+    }
 
     gallery.innerHTML = ""
     gallery.appendChild(fragment)
@@ -47,7 +47,7 @@ const updateTags = () => {
     tagsWrapper.innerHTML = ""
     const fragment = document.createDocumentFragment()
 
-    tags.forEach(tag => {
+    for (const tag of tags) {
         const tagElem = document.createElement("div")
         tagElem.className = "tag-item"
         tagElem.dataset.type = tag.type
@@ -62,7 +62,7 @@ const updateTags = () => {
 
         // Remove Tag
         tagElem.addEventListener("click", () => removeTag(tag))
-    })
+    }
 
     tagsWrapper.appendChild(fragment)
 
@@ -96,42 +96,67 @@ const removeTag = tag => {
 const updateFilters = filteredRecipes => {
     let filteredOptions = getAllIngredientsAndTools(filteredRecipes)
     let categorizedTags = {
-        ingredients: tags.filter(tag => tag.type === "ingredient").map(tag => tag.name.toLowerCase()),
-        appliances: tags.filter(tag => tag.type === "appliance").map(tag => tag.name.toLowerCase()),
-        utensils: tags.filter(tag => tag.type === "utensil").map(tag => tag.name.toLowerCase()),
+        ingredients: [],
+        appliances: [],
+        utensils: [],
+    }
+    for (const tag of tags) {
+        const category = categorizedTags[tag.type + "s"]
+        category[category.length] = tag.name.toLowerCase()
     }
 
-    filteredOptions = {
-        ingredients: filteredOptions.ingredients
-            .filter(ingredient => !categorizedTags.ingredients.includes(ingredient.toLowerCase())),
-        appliances: filteredOptions.appliances
-            .filter(appliance => !categorizedTags.appliances.includes(appliance.toLowerCase())),
-        utensils: filteredOptions.utensils
-            .filter(utensil => !categorizedTags.utensils.includes(utensil.toLowerCase())),
+    const filterCategory = function (category, options) {
+        const filteredItems = []
+        for (const option of options) {
+            if (!categorizedTags[category].includes(option.toLowerCase())) {
+                filteredItems[filteredItems.length] = option
+            }
+        }
+        return filteredItems
     }
 
-    dropdown1.updateDisplayedOptions(Array.from(filteredOptions.ingredients))
-    dropdown2.updateDisplayedOptions(Array.from(filteredOptions.appliances))
-    dropdown3.updateDisplayedOptions(Array.from(filteredOptions.utensils))
+    const filteredIngredients = filterCategory("ingredients", filteredOptions.ingredients)
+    const filteredAppliances = filterCategory("appliances", filteredOptions.appliances)
+    const filteredUtensils = filterCategory("utensils", filteredOptions.utensils)
+
+    dropdown1.updateDisplayedOptions(filteredIngredients)
+    dropdown2.updateDisplayedOptions(filteredAppliances)
+    dropdown3.updateDisplayedOptions(filteredUtensils)
 }
 
 // Function to extract tags from a recipe
 const getRecipeTags = recipe => {
-    const ingredients = recipe.ingredients.map(ingredient => ingredient.ingredient.toLowerCase())
-    const utensils = recipe.utensils.map(utensil => utensil.toLowerCase())
+    const ingredients = []
+    for (const ingredient of recipe.ingredients) {
+        ingredients.push(ingredient.ingredient.toLowerCase())
+    }
+    const utensils = []
+    for (const utensil of recipe.utensils) {
+        utensils.push(utensil.toLowerCase())
+    }
 
     return new Set([...ingredients, recipe.appliance.toLowerCase(), ...utensils])
 }
 
 // Function to update recipes based on filters
 const updateFilteredRecipes = () => {
-    const filteredRecipes = recipes.filter(recipe => {
+    const filteredRecipes = []
+    for (const recipe of recipes) {
         const recipeTags = getRecipeTags(recipe)
+        let matchTags = true
 
-        const matchTags = tags.every(tag => recipeTags.has(tag.name.toLowerCase()))
+        for (const tag of tags) {
+            if (!recipeTags.has(tag.name.toLowerCase())) {
+                matchTags = false
+                break
+            }
+        }
 
-        return matchTags
-    })
+        if (matchTags) {
+            filteredRecipes.push(recipe)
+        }
+    }
+
     displayRecipes(filteredRecipes)
     updateFilters(filteredRecipes)
 
@@ -141,13 +166,14 @@ const updateFilteredRecipes = () => {
 function handleSearch() {
     const searchQuery = searchBar.value.toLowerCase().trim()
     if (searchQuery) {
-        const searchResults = recipes.filter(recipe => {
+        const searchResults = []
+        for (const recipe of recipes) {
             const recipeTags = getRecipeTags(recipe)
-            return (
-                recipe.name.toLowerCase().includes(searchQuery) ||
-                Array.from(recipeTags).some(tag => tag.includes(searchQuery))
-            )
-        })
+            if (recipe.name.toLowerCase().includes(searchQuery) ||
+                Array.from(recipeTags).some(tag => tag.includes(searchQuery))) {
+                searchResults.push(recipe)
+            }
+        }
 
         displayRecipes(searchResults)
         updateFilters(searchResults)
@@ -163,21 +189,30 @@ function getAllIngredientsAndTools(recipes) {
     let appliancesSet = new Set()
     let utensilsSet = new Set()
 
-    recipes.forEach(recipe => {
-        recipe.ingredients.forEach(ingredient => {
+    for (const recipe of recipes) {
+        for (const ingredient of recipe.ingredients) {
             ingredientsSet.add(ingredient.ingredient.toLowerCase())
-        })
+        }
 
         appliancesSet.add(recipe.appliance.toLowerCase())
 
-        recipe.utensils.forEach(utensil => {
+        for (const utensil of recipe.utensils) {
             utensilsSet.add(utensil.toLowerCase())
-        })
-    })
+        }
+    }
 
-    const ingredients = Array.from(ingredientsSet).map(capitalize)
-    const appliances = Array.from(appliancesSet).map(capitalize)
-    const utensils = Array.from(utensilsSet).map(capitalize)
+    const ingredients = []
+    for (const str of Array.from(ingredientsSet)) {
+        ingredients.push(capitalize(str))
+    }
+    const appliances = []
+    for (const str of Array.from(appliancesSet)) {
+        appliances.push(capitalize(str))
+    }
+    const utensils = []
+    for (const str of Array.from(utensilsSet)) {
+        utensils.push(capitalize(str))
+    }
 
     return {ingredients, appliances, utensils}
 }
@@ -190,7 +225,3 @@ const dropdown2 = new Dropdown(document.querySelector("#appliance"), Array.from(
 dropdown2.init()
 const dropdown3 = new Dropdown(document.querySelector("#utensil"), Array.from(utensils))
 dropdown3.init()
-
-window.onbeforeunload = function () {
-    alert("Are you sure you want to leave?")
-}

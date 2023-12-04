@@ -17,25 +17,23 @@ class Dropdown {
     init() {
         this.updateDisplayedOptions(this.initialOptions)
         this.focusableInsideElements = this.dropdown.querySelectorAll("*[tabindex='-1']:not(.options-wrapper):not(.option-item)")
-
         this.focusableOutsideElements = this.getFocusableElementsOutsideDropdown()
 
         if (this.input.value) {
             this.resetBtn.style.display = "block"
-            let isHidden = this.resetBtn.style.display === "block" ? "false" : "true";
-            this.resetBtn.setAttribute("aria-hidden", isHidden);
+            let isHidden = this.resetBtn.style.display === "block" ? "false" : "true"
+            this.resetBtn.setAttribute("aria-hidden", isHidden)
         }
-
         this.setEventListener()
     }
 
     setEventListener() {
         this.btn.addEventListener("click", this.toggle.bind(this))
         this.resetBtn.addEventListener("click", this.reset.bind(this))
-        this.input.addEventListener('input', e => {
-            e.preventDefault();
-            const value = this.input.value;
-            this.resetBtn.style.display = value ? "block" : "none";
+        this.input.addEventListener("input", e => {
+            e.preventDefault()
+            const value = this.input.value
+            this.resetBtn.style.display = value ? "block" : "none"
             let hidden = this.resetBtn.style.display === "block" ? "false" : "true"
             this.resetBtn.setAttribute("aria-hidden", hidden)
         })
@@ -45,26 +43,26 @@ class Dropdown {
         let options = newOptions.sort()
         const fragment = document.createDocumentFragment()
         for (const element of options) {
-            fragment.appendChild(this.createOptionDOM(element));
+            fragment.appendChild(this.createOptionDOM(element))
         }
         return fragment
     }
 
     createOptionDOM(option) {
         let value = option.trim()
-        let link = document.createElement('a')
+        let link = document.createElement("a")
         link.className = "option-item"
         link.dataset.value = option.toLowerCase()
         link.setAttribute("role", "menuitem")
         link.setAttribute("tabindex", "-1")
-        link.textContent = value
+        link.textContent = capitalize(value)
         link.href = "#"
         return link
     }
 
     getFocusableElementsOutsideDropdown() {
-        const focusableElements = document.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
-        const res = [];
+        const focusableElements = document.querySelectorAll("a[href], button, input, select, textarea, [tabindex]:not([tabindex=\"-1\"])")
+        const res = []
         const elemArray = Array.from(focusableElements)
 
         for (const element of elemArray) {
@@ -72,7 +70,7 @@ class Dropdown {
                 res.push(element)
             }
         }
-        return res;
+        return res
     }
 
     toggle() {
@@ -80,32 +78,27 @@ class Dropdown {
     }
 
     updateDisplayedOptions(newOptions) {
-
-        if (!Array.isArray(newOptions) || !newOptions.every(option => typeof option === "string")) {
-            console.error(newOptions, "Please provide a valid array of strings for options");
-            return;
-        }
-        let updatedOptionsList = this.createOptionsList(newOptions);
-        this.optionsContainer.innerHTML = "";
-        this.optionsContainer.appendChild(updatedOptionsList);
-        this.optionElements = this.dropdown.querySelectorAll(".option-item");
+        let updatedOptionsList = this.createOptionsList(newOptions)
+        this.optionsContainer.innerHTML = ""
+        this.optionsContainer.appendChild(updatedOptionsList)
+        this.optionElements = this.dropdown.querySelectorAll(".option-item")
 
         if (this.optionElements.length === 0) {
-            const noResultsElement = document.createElement('p');
-            noResultsElement.textContent = "No results found";
-            noResultsElement.className = 'no-options-found';
-            this.optionsContainer.innerHTML = "";
-            this.optionsContainer.appendChild(noResultsElement);
+            const noResultsElement = document.createElement("p")
+            noResultsElement.textContent = "No results found"
+            noResultsElement.className = "no-options-found"
+            this.optionsContainer.innerHTML = ""
+            this.optionsContainer.appendChild(noResultsElement)
         }
     }
 
     searchOnChange(e) {
-        const searchTerm = e.target.value.toLowerCase().trim();
+        const searchTerm = e.target.value.toLowerCase().trim()
         let newOptions = []
 
         if (searchTerm.length >= 3) {
             for (const element of this.displayedOptions) {
-                const optionName = element.dataset.value.toLowerCase().trim();
+                const optionName = element.dataset.value.toLowerCase().trim()
                 if (optionName.includes(searchTerm)) {
                     newOptions.push(capitalize(optionName))
                 }
@@ -115,7 +108,6 @@ class Dropdown {
                 newOptions.push(capitalize(element.dataset.value.toLowerCase().trim()))
             }
         }
-
         this.updateDisplayedOptions(newOptions)
     }
 
@@ -123,19 +115,19 @@ class Dropdown {
         e.preventDefault()
         // Click outside the dropdown
         if (!this.dropdown.contains(e.target)) {
-            this.close();
-            return;
+            this.close()
+            return
         }
-        // Select an option
 
+        // Select an option
         if (Array.from(this.optionElements).includes(e.target)) {
             if (e.target.style.display === "none") {
-                return;
+                return
             }
-            const clickedOption = Array.from(this.optionElements).find(option => option === e.target);
+            const clickedOption = Array.from(this.optionElements).find(option => option === e.target)
             if (clickedOption) {
-                this.createTag(this.type, clickedOption.dataset.value);
-                this.close();
+                this.createTag(this.type, clickedOption.dataset.value)
+                this.close()
                 this.reset()
             }
         }
@@ -150,25 +142,24 @@ class Dropdown {
     }
 
     arrowNavigation(direction) {
-        const displayedOptionsArray = Array.from(this.displayedOptions);
-        let selectedIndex = displayedOptionsArray.indexOf(document.activeElement);
+        const displayedOptionsArray = Array.from(this.displayedOptions)
+        let selectedIndex = displayedOptionsArray.indexOf(document.activeElement)
 
         if (direction === "ArrowDown") {
-            selectedIndex = (selectedIndex + 1) % displayedOptionsArray.length;
+            selectedIndex = (selectedIndex + 1) % displayedOptionsArray.length
         } else if (direction === "ArrowUp") {
-            selectedIndex = (selectedIndex - 1 + displayedOptionsArray.length) % displayedOptionsArray.length;
+            selectedIndex = (selectedIndex - 1 + displayedOptionsArray.length) % displayedOptionsArray.length
         }
 
-        displayedOptionsArray[selectedIndex].focus();
+        displayedOptionsArray[selectedIndex].focus()
     }
 
     handleKey(e) {
-
         // Escape
         if (e.code === "Escape") {
             this.close()
         }
-
+        // Arrows
         if ((e.code === "ArrowUp" || e.code === "ArrowDown") && Array.from(this.displayedOptions).includes(e.target)) {
             e.preventDefault()
             this.arrowNavigation(e.code)
@@ -176,20 +167,20 @@ class Dropdown {
     }
 
     open() {
-        this.displayedOptions = this.dropdown.querySelectorAll('.option-item')
+        this.displayedOptions = this.dropdown.querySelectorAll(".option-item")
 
         for (const element of this.focusableInsideElements) {
-            element.setAttribute("tabindex", "0");
-            element.setAttribute("aria-hidden", "false");
+            element.setAttribute("tabindex", "0")
+            element.setAttribute("aria-hidden", "false")
         }
 
         for (const element of this.displayedOptions) {
-            element.setAttribute("tabindex", "0");
-            element.setAttribute("aria-hidden", "false");
+            element.setAttribute("tabindex", "0")
+            element.setAttribute("aria-hidden", "false")
         }
 
         for (const element of this.focusableOutsideElements) {
-            element.setAttribute("tabindex", "-1");
+            element.setAttribute("tabindex", "-1")
         }
 
         this.boundClick = this.handleClick.bind(this)
@@ -227,9 +218,9 @@ class Dropdown {
     }
 
     reset() {
-        this.input.value = null;
-        this.resetBtn.style.display = "none";
-        this.resetBtn.setAttribute("aria-hidden", "true");
+        this.input.value = null
+        this.resetBtn.style.display = "none"
+        this.resetBtn.setAttribute("aria-hidden", "true")
         this.input.focus()
     }
 }
