@@ -341,22 +341,21 @@ main {
     cursor: pointer;
 }
 
-.tag-item:hover {
+.tag-item:hover, .tag-item:active, .tag-item:focus, .tag-item:focus-visible {
     background: rgba(255, 99, 71, 0.15);
     outline: 2px dashed tomato;
     transform: translateY(-1px) rotate(1deg);
 }
 
-.tag-item[data-type="appliance"]:hover {
-
+.tag-item[data-type="appliance"]:hover, .tag-item[data-type="appliance"]:active, .tag-item[data-type="appliance"]:focus, .tag-item[data-type="appliance"]:focus-visible {
     transform: translateY(1px) rotate(3deg);
 }
 
-.tag-item[data-type="ustentil"]:hover {
+.tag-item[data-type="ustentil"]:hover, .tag-item[data-type="ustentil"]:active, .tag-item[data-type="ustentil"]:focus, .tag-item[data-type="ustentil"]:focus-visible {
     transform: translateY(-1px) rotate(-3deg);
 }
 
-.tag-item svg:hover {
+.tag-item svg:hover, .tag-item svg:active, .tag-item svg:focus, .tag-item svg:focus-visible {
     transform: scale(1.1);
 }
 

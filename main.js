@@ -48,7 +48,7 @@ const updateTags = () => {
     const fragment = document.createDocumentFragment()
 
     tags.forEach(tag => {
-        const tagElem = document.createElement("div")
+        const tagElem = document.createElement("button")
         tagElem.className = "tag-item"
         tagElem.dataset.type = tag.type
         tagElem.dataset.value = tag.name.toLowerCase()
@@ -133,12 +133,10 @@ const updateFilteredRecipes = () => {
 }
 
 // Function to handle search
-function handleSearch() {
+function handleSearch(e) {
+    e.preventDefault()
     const searchQuery = searchBar.value.toLowerCase().trim()
 
-    if (!searchQuery) {
-        return
-    }
     const searchResults = recipes.filter(recipe => {
         const recipeTags = getRecipeTags(recipe)
         return (
@@ -152,6 +150,7 @@ function handleSearch() {
 }
 
 // Event listener for the search bar
+document.querySelector(".search-bar").addEventListener("submit", handleSearch)
 searchBar.addEventListener("input", handleSearch)
 
 // Extracts unique ingredients, appliances, and utensils from a list of recipes.
