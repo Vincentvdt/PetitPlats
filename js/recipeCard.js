@@ -2,17 +2,15 @@ const createRecipeTemplate = ({id, image, name, time, description, ingredients})
     const picturePath = `./assets/img/${image}`
 
     const generateIngredientsHTML = () => {
-        let result = ""
-        for (const {ingredient: ingredientName, quantity, unit} of ingredients) {
+        return ingredients.map(({ingredient: name, quantity, unit}) => {
             const quantityString = `${quantity || ""} ${unit || ""}`.trim()
-            result += `
-           <div class="recipe-ingredient">
-              <p class="recipe-ingredient_name">${ingredientName}</p>
-              <p class="recipe-ingredient_quantity">${quantityString}</p>
-           </div>
+            return `
+            <div class="recipe-ingredient">
+                <p class="recipe-ingredient_name">${name}</p>
+                <p class="recipe-ingredient_quantity">${quantityString}</p>
+            </div>
         `
-        }
-        return result
+        }).join("")
     }
 
     const getRecipeHTML = () => {
