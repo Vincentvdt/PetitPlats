@@ -40,11 +40,11 @@ class Dropdown {
     }
 
     createOptionsList(newOptions) {
-        let options = newOptions.sort()
+        const options = newOptions.slice().sort() // Create a copy of the array to avoid modifying the original
         const fragment = document.createDocumentFragment()
-        for (const element of options) {
-            fragment.appendChild(this.createOptionDOM(element))
-        }
+
+        options.forEach(option => fragment.appendChild(this.createOptionDOM(option)))
+
         return fragment
     }
 
@@ -62,15 +62,7 @@ class Dropdown {
 
     getFocusableElementsOutsideDropdown() {
         const focusableElements = document.querySelectorAll("a[href], button, input, select, textarea, [tabindex]:not([tabindex=\"-1\"])")
-        const res = []
-        const elemArray = Array.from(focusableElements)
-
-        for (const element of elemArray) {
-            if (!this.dropdown.contains(element)) {
-                res.push(element)
-            }
-        }
-        return res
+        return Array.from(focusableElements).filter(element => !this.dropdown.contains(element))
     }
 
     toggle() {
@@ -92,22 +84,16 @@ class Dropdown {
         }
     }
 
-    searchOnChange(e) {
-        const searchTerm = e.target.value.toLowerCase().trim()
-        let newOptions = []
+    searchOnChange({target: {value}}) {
+        const searchTerm = value.toLowerCase().trim()
 
-        if (searchTerm.length >= 3) {
-            for (const element of this.displayedOptions) {
-                const optionName = element.dataset.value.toLowerCase().trim()
-                if (optionName.includes(searchTerm)) {
-                    newOptions.push(capitalize(optionName))
-                }
-            }
-        } else {
-            for (const element of this.displayedOptions) {
-                newOptions.push(capitalize(element.dataset.value.toLowerCase().trim()))
-            }
-        }
+        const newOptions = (searchTerm.length >= 3)
+            ? Array.from(this.displayedOptions)
+                .filter(option => option.dataset.value.toLowerCase().trim().includes(searchTerm))
+                .map(option => capitalize(option.dataset.value))
+            : Array.from(this.displayedOptions)
+                .map(option => capitalize(option.dataset.value))
+
         this.updateDisplayedOptions(newOptions)
     }
 
@@ -166,22 +152,19 @@ class Dropdown {
         }
     }
 
+    setAttributes = (elements, tabIndex, ariaHidden) => {
+        elements.forEach(element => {
+            element.setAttribute("tabindex", tabIndex)
+            element.setAttribute("aria-hidden", ariaHidden)
+        })
+    }
+
     open() {
         this.displayedOptions = this.dropdown.querySelectorAll(".option-item")
 
-        for (const element of this.focusableInsideElements) {
-            element.setAttribute("tabindex", "0")
-            element.setAttribute("aria-hidden", "false")
-        }
-
-        for (const element of this.displayedOptions) {
-            element.setAttribute("tabindex", "0")
-            element.setAttribute("aria-hidden", "false")
-        }
-
-        for (const element of this.focusableOutsideElements) {
-            element.setAttribute("tabindex", "-1")
-        }
+        this.setAttributes(this.focusableInsideElements, "1", "false")
+        this.setAttributes(this.displayedOptions, "1", "false")
+        this.setAttributes(this.focusableOutsideElements, "-1", "true")
 
         this.boundClick = this.handleClick.bind(this)
         this.boundKey = this.handleKey.bind(this)
@@ -196,20 +179,9 @@ class Dropdown {
     }
 
     close() {
-        for (const element of this.focusableInsideElements) {
-            element.setAttribute("tabindex", "-1")
-            element.setAttribute("aria-hidden", "true")
-        }
-
-        for (const element of this.displayedOptions) {
-            element.setAttribute("tabindex", "-1")
-            element.setAttribute("aria-hidden", "true")
-        }
-
-        for (const element of this.focusableOutsideElements) {
-            element.setAttribute("tabindex", "0")
-            element.setAttribute("aria-hidden", "false")
-        }
+        this.setAttributes(this.focusableInsideElements, "-1", "true")
+        this.setAttributes(this.displayedOptions, "-1", "true")
+        this.setAttributes(this.focusableOutsideElements, "0", "false")
 
         document.removeEventListener("click", this.boundClick)
         document.removeEventListener("keydown", this.boundKey)
