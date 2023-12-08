@@ -115,7 +115,7 @@ searchBar.addEventListener("submit", e => {
 
 //  Updates the dropdown filters based on the filtered recipes
 const updateDropdownOptions = () => {
-    if (displayedRecipes.length <= 0) {
+    if (displayedRecipes.length <= 0 && !tags.length) {
         displayedRecipes = recipes
     }
     const extractedOptions = getAllRecipesInformation(displayedRecipes)
