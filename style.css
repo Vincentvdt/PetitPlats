@@ -522,14 +522,16 @@ main {
     outline: none;
 }
 
-@media screen and (max-width: 1240px) {
+@media screen and (max-width: 1280px) {
     .recipes {
-        column-gap: 2rem;
+        justify-content: center;
     }
 
     .recipe-card {
-        max-width: calc(50% - 1rem);
+        max-width: calc(50% - 3rem);
     }
+
+    
 }
 
 @media screen and (max-width: 1024px) {
