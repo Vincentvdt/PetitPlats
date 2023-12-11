@@ -42,7 +42,9 @@ class Dropdown {
         const options = newOptions.slice().sort() // Create a copy of the array to avoid modifying the original
         const fragment = document.createDocumentFragment()
 
-        options.forEach(option => fragment.appendChild(this.createOptionDOM(option)))
+        for (const option of options) {
+            fragment.appendChild(this.createOptionDOM(option))
+        }
 
         return fragment
     }
@@ -61,7 +63,15 @@ class Dropdown {
 
     getFocusableElementsOutsideDropdown() {
         const focusableElements = document.querySelectorAll("a[href], button, input, select, textarea, [tabindex]:not([tabindex=\"-1\"])")
-        return Array.from(focusableElements).filter(element => !this.dropdown.contains(element))
+        const elementsOutsideDropdown = []
+
+        for (const element of Array.from(focusableElements)) {
+            if (!this.dropdown.contains(element)) {
+                elementsOutsideDropdown.push(element)
+            }
+        }
+
+        return elementsOutsideDropdown
     }
 
     toggle() {
@@ -85,13 +95,19 @@ class Dropdown {
 
     searchOnChange({target: {value}}) {
         const searchTerm = value.toLowerCase().trim()
+        const newOptions = []
 
-        const newOptions = (searchTerm.length >= 3)
-            ? Array.from(this.displayedOptions)
-                .filter(option => option.dataset.value.toLowerCase().trim().includes(searchTerm))
-                .map(option => capitalize(option.dataset.value))
-            : Array.from(this.displayedOptions)
-                .map(option => capitalize(option.dataset.value))
+        if (searchTerm.length >= 3) {
+            for (const option of Array.from(this.displayedOptions)) {
+                if (option.dataset.value.toLowerCase().trim().includes(searchTerm)) {
+                    newOptions.push(capitalize(option.dataset.value))
+                }
+            }
+        } else {
+            for (const option of Array.from(this.displayedOptions)) {
+                newOptions.push(capitalize(option.dataset.value))
+            }
+        }
 
         this.updateDisplayedOptions(newOptions)
     }
@@ -152,10 +168,10 @@ class Dropdown {
     }
 
     setAttributes = (elements, tabIndex, ariaHidden) => {
-        elements.forEach(element => {
+        for (const element of elements) {
             element.setAttribute("tabindex", tabIndex)
             element.setAttribute("aria-hidden", ariaHidden)
-        })
+        }
     }
 
     open() {
