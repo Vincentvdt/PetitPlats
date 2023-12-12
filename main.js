@@ -91,15 +91,15 @@ const filterRecipes = () => {
         })
     }
 
-    if (searchQuery) {
+    if (searchQuery.length >= 3) {
         filteredRecipes = filteredRecipes.filter(recipe => {
             recipeTags = getRecipeTags(recipe, "ingredients")
             return (
                 recipe.name.toLowerCase().includes(searchQuery) ||
+                recipe.description.toLowerCase().includes(searchQuery) ||
                 Array.from(recipeTags).some(tag => tag.includes(searchQuery))
             )
         })
-        input.value = ""
     }
 
     if (filteredRecipes.length === 0) {
@@ -108,9 +108,15 @@ const filterRecipes = () => {
     displayRecipes(filteredRecipes)
 }
 
+searchBar.addEventListener("input", e => {
+    e.preventDefault()
+    filterRecipes()
+})
+
 searchBar.addEventListener("submit", e => {
     e.preventDefault()
     filterRecipes()
+    searchBar.querySelector("input").value = ""
 })
 
 //  Updates the dropdown filters based on the filtered recipes
