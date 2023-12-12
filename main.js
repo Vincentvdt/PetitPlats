@@ -8,6 +8,16 @@ let displayedRecipes = [...recipes]
 // Function to capitalize the first letter of a string
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
 
+const displayNoRecipe = () => {
+    const input = searchBar.querySelector("input")
+    const searchQuery = input.value.toLowerCase().trim()
+    const counterElement = document.querySelector(".recipes_count")
+    let message = `Aucune recette ne contient ‘${searchQuery}’ vous pouvez chercher «tarte aux pommes », « poisson », etc.`
+    counterElement.textContent = "00 recette"
+    gallery.textContent = message
+    displayedRecipes = recipes
+}
+
 // Function to display the recipes
 const displayRecipes = recipes => {
 
@@ -22,11 +32,10 @@ const displayRecipes = recipes => {
     gallery.appendChild(fragment)
     displayedRecipes = recipes
     const counterElement = document.querySelector(".recipes_count")
+    const noRecipeFound = displayedRecipes.length === 0
     // Update recipes counter
-    if (displayedRecipes.length === 0) {
-        counterElement.textContent = "Aucune recette"
-        gallery.textContent = "Aucune recette disponible pour l'instant. Essayez quelque chose d'autre!"
-
+    if (noRecipeFound) {
+        displayNoRecipe()
     } else {
         const pluralSuffix = displayedRecipes.length === 1 ? "" : "s"
         const formattedCount = displayedRecipes.length.toLocaleString("en-US", {
@@ -107,10 +116,6 @@ const filterRecipes = () => {
         }
         filteredRecipes = tempFilteredRecipes
 
-    }
-
-    if (filteredRecipes.length === 0) {
-        displayedRecipes = recipes
     }
     displayRecipes(filteredRecipes)
 }
