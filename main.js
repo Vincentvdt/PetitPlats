@@ -93,19 +93,20 @@ const filterRecipes = () => {
         filteredRecipes = tempFilteredRecipes
     }
 
-    if (searchQuery) {
+    if (searchQuery.length >= 3) {
         const tempFilteredRecipes = []
         for (const recipe of filteredRecipes) {
             recipeTags = getRecipeTags(recipe, "ingredients")
             if (
                 recipe.name.toLowerCase().includes(searchQuery) ||
+                recipe.description.toLowerCase().includes(searchQuery) ||
                 Array.from(recipeTags).some(tag => tag.includes(searchQuery))
             ) {
                 tempFilteredRecipes.push(recipe)
             }
         }
         filteredRecipes = tempFilteredRecipes
-        input.value = ""
+
     }
 
     if (filteredRecipes.length === 0) {
@@ -114,9 +115,15 @@ const filterRecipes = () => {
     displayRecipes(filteredRecipes)
 }
 
+searchBar.addEventListener("input", e => {
+    e.preventDefault()
+    filterRecipes()
+})
+
 searchBar.addEventListener("submit", e => {
     e.preventDefault()
     filterRecipes()
+    searchBar.querySelector("input").value = ""
 })
 
 //  Updates the dropdown filters based on the filtered recipes
